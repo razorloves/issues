@@ -93,14 +93,11 @@ body:
     validations:
       required: true
 
-  - type: dropdown
+  - type: checkboxes
     id: directions
     attributes:
-      label: "I have read the directions"
-      description: "https://wiki.lineageos.org/how-to/bugreport"
+      label: Confirmation
+      description: "Please confirm before submitting."
       options:
-        - 'No'
-        - 'Yes'
-    validations:
-      required: true
-
+        - label: "I have read the directions at https://wiki.lineageos.org/how-to/bugreport"
+          required: true
