@@ -45,8 +45,8 @@ def device_list() -> dict:
     ret = {}
 
     for line in requests.get(
-            'https://raw.githubusercontent.com/LineageOS/hudson/main/lineage-build-targets',
-            timeout=5,
+        'https://raw.githubusercontent.com/LineageOS/hudson/main/lineage-build-targets',
+        timeout=5,
     ).text.splitlines():
         if ' lineage-' in line:
             codename, _, version, _ = line.split()
@@ -103,7 +103,9 @@ def issue_errors(issue: IssueBody) -> list:
             )
 
     if not re.findall(r'^\d{8}$', issue.date):
-        ret.append(f'Build date "{issue.date}" is not a valid date. Valid date format is YYYYMMDD')
+        ret.append(
+            f'Build date "{issue.date}" is not a valid date. Valid date format is YYYYMMDD'
+        )
 
     return ret
 
@@ -125,28 +127,36 @@ def main() -> None:
     try:
         issue_body = IssueBody(json.loads(os.environ.get('ISSUE_BODY')))
     except JSONDecodeError:
-        issue.create_comment('\n'.join([
-            'Hi! It appears that your issue doesn\'t use the correct template.',
-            'Please create a new one and make sure to select "Bug Report" template.',
-            '',
-            '(this action was performed by a bot)',
-        ]))
+        issue.create_comment(
+            '\n'.join(
+                [
+                    "Hi! It appears that your issue doesn't use the correct template.",
+                    'Please create a new one and make sure to select "Bug Report" template.',
+                    '',
+                    '(this action was performed by a bot)',
+                ]
+            )
+        )
         issue.edit(state='closed')
         return
 
     # Close issue if there are any errors
     if errors := issue_errors(issue_body):
-        issue.create_comment('\n'.join([
-            'Hi! It appears you didn\'t read or follow the provided issue template.',
-            'Please edit your issue to include the requested fields and follow the provided template, then reopen it.',
-            'For more information please see https://wiki.lineageos.org/how-to/bugreport.',
-            '',
-            'Problems:',
-            '',
-            *[f'* {x}' for x in errors],
-            '',
-            '(this action was performed by a bot)',
-        ]))
+        issue.create_comment(
+            '\n'.join(
+                [
+                    "Hi! It appears you didn't read or follow the provided issue template.",
+                    'Please edit your issue to include the requested fields and follow the provided template, then reopen it.',
+                    'For more information please see https://wiki.lineageos.org/how-to/bugreport.',
+                    '',
+                    'Problems:',
+                    '',
+                    *[f'* {x}' for x in errors],
+                    '',
+                    '(this action was performed by a bot)',
+                ]
+            )
+        )
         issue.edit(state='closed')
         return
 
@@ -163,14 +173,21 @@ def main() -> None:
     for maintainer in device_maintainers(issue_body.device):
         try:
             user = github.get_user(maintainer)
-            _, data = issue._requester.requestJsonAndCheck('POST', f'{issue.url}/assignees', input={
-                'assignees': [user.login],
-            })
+            _, data = issue._requester.requestJsonAndCheck(
+                'POST',
+                f'{issue.url}/assignees',
+                input={
+                    'assignees': [user.login],
+                },
+            )
 
             if not any(x['id'] == user.id for x in data['assignees']):
                 raise GithubException(status=400, message='User not added')
         except GithubException as e:
-            print(f"::warning ::Failed to assign {maintainer}: {e.message}", flush=True)
+            print(
+                f'::warning ::Failed to assign {maintainer}: {e.message}',
+                flush=True,
+            )
 
 
 if __name__ == '__main__':
