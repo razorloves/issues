@@ -146,7 +146,7 @@ def main() -> None:
             '\n'.join(
                 [
                     "Hi! It appears you didn't read or follow the provided issue template.",
-                    'Please edit your issue to include the requested fields and follow the provided template, then reopen it.',
+                    'Please edit your issue to include the requested fields and follow the provided template, then reopen it by commenting `/reopen`.',
                     'For more information please see https://wiki.lineageos.org/how-to/bugreport.',
                     '',
                     'Problems:',
@@ -159,6 +159,9 @@ def main() -> None:
         )
         issue.edit(state='closed')
         return
+
+    # Reopen if closed
+    issue.edit(state='open')
 
     # Label issue
     for label, color in [

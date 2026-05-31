@@ -3,6 +3,8 @@ name: Label issue
 on:
   issues:
     types: [opened, reopened]
+  issue_comment:
+    types: [created]
 
 permissions:
   contents: read
@@ -13,11 +15,32 @@ jobs:
     runs-on: ubuntu-24.04
 
     steps:
+    - name: Detect /reopen comment
+      id: reopen-check
+      if: github.event_name == 'issue_comment'
+      run: |
+        BODY="${{ github.event.comment.body }}"
+        AUTHOR="${{ github.event.comment.user.login }}"
+        ISSUE_AUTHOR="${{ github.event.issue.user.login }}"
+        STATE="${{ github.event.issue.state }}"
+
+        if [ "$STATE" = "closed" ] && [ "$AUTHOR" = "$ISSUE_AUTHOR" ] && echo "$BODY" | grep -qE '^/reopen\b'; then
+          echo "reopen=true" >> $GITHUB_OUTPUT
+        else
+          echo "reopen=false" >> $GITHUB_OUTPUT
+        fi
+
     - name: Checkout repo
+      if: |
+        github.event_name == 'issues' ||
+        steps.reopen-check.outputs.reopen == 'true'
       uses: actions/checkout@v6
 
     - name: Parse issue body
       id: issue-parser
+      if: |
+        github.event_name == 'issues' ||
+        steps.reopen-check.outputs.reopen == 'true'
       uses: edumserrano/github-issue-forms-parser@f4e7864950f591c91ddd5215592484a4c789cebd
       continue-on-error: true
       with:
@@ -25,9 +48,15 @@ jobs:
         issue-form-body: '${{ github.event.issue.body }}'
 
     - name: Install dependencies
+      if: |
+        github.event_name == 'issues' ||
+        steps.reopen-check.outputs.reopen == 'true'
       run: pip install -r requirements.txt
 
     - name: Label issue
+      if: |
+        github.event_name == 'issues' ||
+        steps.reopen-check.outputs.reopen == 'true'
       run: ./label.py
       env:
         GITHUB_REPOSITORY: ${{ github.repository }}
