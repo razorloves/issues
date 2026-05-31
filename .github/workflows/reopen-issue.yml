@@ -1,0 +1,39 @@
+name: Reopen issue
+
+on:
+  issue_comment:
+    types: [created]
+
+permissions:
+  issues: write
+
+jobs:
+  reopen:
+    runs-on: ubuntu-slim
+
+    steps:
+      - uses: actions/github-script@v9
+        with:
+          script: |
+            const issue = context.payload.issue;
+
+            if (issue.state !== "closed") {
+              return;
+            }
+
+            const comment = context.payload.comment;
+
+            if (comment.user.login !== issue.user.login) {
+              return;
+            }
+
+            if (!comment.body.trim() === "/reopen") {
+              return;
+            }
+
+            await github.rest.issues.update({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issue.number,
+              state: "open"
+            });
