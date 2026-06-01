@@ -27,7 +27,9 @@ class IssueBody:
         self.directions: str = issue_body['directions']
 
         # Let's be friendly...
-        if x := re.findall(r'^lineage-(\d+)\.(\d+)', self.version, re.IGNORECASE):
+        if x := re.findall(
+            r'^lineage-(\d+)\.(\d+)', self.version, re.IGNORECASE
+        ):
             # lineage-20.0.* -> lineage-20.0
             self.version = f'lineage-{".".join(x[0])}'
         elif x := re.findall(r'^lineage-(\d+)', self.version, re.IGNORECASE):
