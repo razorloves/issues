@@ -25,7 +25,7 @@ jobs:
           const comment = context.payload.comment;
           const isReopen =
             issue.state === "closed" &&
-            comment.user.login !== issue.user.login &&
+            comment.user.login === issue.user.login &&
             comment.body.trim() === "/reopen";
 
           core.setOutput("reopen", isReopen ? "true" : "false");
