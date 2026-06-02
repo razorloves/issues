@@ -34,7 +34,7 @@ body:
     attributes:
       label: "LineageOS Version"
       description: "'Latest' is not a valid answer, please write the exact version number."
-      placeholder: "lineage-20"
+      placeholder: "lineage-23.2"
     validations:
       required: true
 
