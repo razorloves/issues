@@ -51,6 +51,7 @@ body:
     id: kernel
     attributes:
       label: Kernel Version
+      description: "Shown under Settings -> About device/phone/tablet -> Android version -> Kernel version"
       placeholder: "4.19.261-ga3e87045cf37"
     validations:
       required: true
@@ -59,6 +60,7 @@ body:
     id: baseband
     attributes:
       label: Baseband Version
+      description: "Shown under Settings -> About device/phone/tablet -> Android version -> Baseband version"
       placeholder: "AT31c7-00087-0713_1634_23a2dce"
 
   - type: input
