@@ -28,12 +28,16 @@ class IssueBody:
 
         # Let's be friendly...
         if x := re.findall(
-            r'^lineage-(\d+)\.(\d+)', self.version, re.IGNORECASE
+            r'^lineage[-\s](\d+)\.(\d+)', self.version, re.IGNORECASE
         ):
             # lineage-20.0.* -> lineage-20.0
+            # lineage 20.0.* -> lineage-20.0
             self.version = f'lineage-{".".join(x[0])}'
-        elif x := re.findall(r'^lineage-(\d+)', self.version, re.IGNORECASE):
+        elif x := re.findall(
+            r'^lineage[-\s](\d+)', self.version, re.IGNORECASE
+        ):
             # lineage-20.* -> lineage-20.0
+            # lineage 20.* -> lineage-20.0
             self.version = f'lineage-{x[0]}.0'
         elif x := re.findall(r'^(\d+)$', self.version):
             # 20 -> lineage-20.0
