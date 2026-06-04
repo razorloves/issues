@@ -34,7 +34,7 @@ class IssueBody:
             self.version = f'lineage-{".".join(x[0])}'
         elif x := re.findall(r'^lineage-(\d+)', self.version, re.IGNORECASE):
             # lineage-20.* -> lineage-20.0
-            self.version = f'{x[0]}.0'
+            self.version = f'lineage-{x[0]}.0'
         elif x := re.findall(r'^(\d+)$', self.version):
             # 20 -> lineage-20.0
             self.version = f'lineage-{x[0]}.0'
