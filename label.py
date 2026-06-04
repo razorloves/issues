@@ -9,6 +9,7 @@ from json import JSONDecodeError
 import requests
 import yaml
 from github import Auth, Github, GithubException
+from parse import parse
 
 
 @dataclass
@@ -27,24 +28,27 @@ class IssueBody:
         self.directions: str = issue_body['directions']
 
         # Let's be friendly...
-        if x := re.findall(
-            r'^lineage[-\s](\d+)\.(\d+)', self.version, re.IGNORECASE
-        ):
-            # lineage-20.0.* -> lineage-20.0
-            # lineage 20.0.* -> lineage-20.0
-            self.version = f'lineage-{".".join(x[0])}'
-        elif x := re.findall(
-            r'^lineage[-\s](\d+)', self.version, re.IGNORECASE
-        ):
-            # lineage-20.* -> lineage-20.0
-            # lineage 20.* -> lineage-20.0
-            self.version = f'lineage-{x[0]}.0'
-        elif x := re.findall(r'^(\d+)$', self.version):
-            # 20 -> lineage-20.0
-            self.version = f'lineage-{x[0]}.0'
-        elif x := re.findall(r'^(\d+)\.(\d+)$', self.version):
-            # 20.0 -> lineage-20.0
-            self.version = f'lineage-{".".join(x[0])}'
+        for pattern in [
+            'lineage-{:d}.{:d}-{}',
+            'lineage {:d}.{:d}-{}',
+            'lineage-{:d}.{:d}',
+            'lineage {:d}.{:d}',
+            'lineage-{:d}',
+            'lineage {:d}',
+            'lineageos-{:d}.{:d}-{}',
+            'lineageos {:d}.{:d}-{}',
+            'lineageos-{:d}.{:d}',
+            'lineageos {:d}.{:d}',
+            'lineageos-{:d}',
+            'lineageos {:d}',
+            '{:d}.{:d}',
+            '{:d}',
+        ]:
+            if version := parse(pattern, self.version):
+                major = version.fixed[0]
+                minor = version.fixed[1] if len(version.fixed) > 1 else 0
+                self.version = f'lineage-{major}.{minor}'
+                break
 
 
 def device_list() -> dict:
