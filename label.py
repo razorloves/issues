@@ -41,6 +41,12 @@ class IssueBody:
             'lineageos {:d}.{:d}',
             'lineageos-{:d}',
             'lineageos {:d}',
+            'lineage os-{:d}.{:d}-{}',
+            'lineage os {:d}.{:d}-{}',
+            'lineage os-{:d}.{:d}',
+            'lineage os {:d}.{:d}',
+            'lineage os-{:d}',
+            'lineage os {:d}',
             '{:d}.{:d}',
             '{:d}',
         ]:
