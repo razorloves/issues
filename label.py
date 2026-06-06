@@ -47,6 +47,7 @@ class IssueBody:
             'lineage os {:d}.{:d}',
             'lineage os-{:d}',
             'lineage os {:d}',
+            '{:d}.{:d}-{}',
             '{:d}.{:d}',
             '{:d}',
         ]:
