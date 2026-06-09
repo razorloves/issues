@@ -210,6 +210,9 @@ def main() -> None:
             )
 
             if url := os.environ.get('DISCORD_WEBHOOK'):
+                repository_name = os.environ.get('GITHUB_REPOSITORY_NAME')
+                workflow_run_url = os.environ.get('GITHUB_WORKFLOW_RUN_URL')
+
                 requests.post(
                     url,
                     json={
@@ -217,10 +220,8 @@ def main() -> None:
                         'avatar_url': 'https://cdn.discordapp.com/avatars/1483379599995047987/e57fd67dc7ca0cc840a0e87a82281bc5',
                         'embeds': [
                             {
-                                'title': f'Failed to assign {maintainer}: {e.message}',
-                                'url': os.environ.get(
-                                    'GITHUB_WORKFLOW_RUN_URL'
-                                ),
+                                'title': f'[{repository_name}] Failed to assign {maintainer}: {e.message}',
+                                'url': workflow_run_url,
                                 'color': 15109472,
                             }
                         ],
