@@ -222,7 +222,7 @@ def main() -> None:
                             {
                                 'title': f'[{repository_name}] Failed to assign {maintainer}: {e.message}',
                                 'url': workflow_run_url,
-                                'color': 15109472,
+                                'color': 15426592,
                             }
                         ],
                     },
