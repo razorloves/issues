@@ -136,7 +136,7 @@ def main() -> None:
     issue = repo.get_issue(number=int(os.environ.get('ISSUE_NUMBER')))
 
     # Don't touch already labeled issue
-    if issue.get_labels().totalCount > 0:
+    if [x for x in issue.get_labels() if x.name != 'invalid']:
         print('Labels count > 0, exiting.')
         return
 
@@ -163,7 +163,7 @@ def main() -> None:
             '\n'.join(
                 [
                     "Hi! It appears you didn't read or follow the provided issue template.",
-                    'Please edit your issue to include the requested fields and follow the provided template, then reopen it by commenting `/reopen`.',
+                    'Please edit your issue to include the requested fields and follow the provided template.',
                     'For more information please see https://wiki.lineageos.org/how-to/bugreport.',
                     '',
                     'Problems:',
@@ -174,10 +174,15 @@ def main() -> None:
                 ]
             )
         )
+        with suppress(GithubException):
+            repo.create_label('invalid', 'b60205')  # just in case
+        issue.add_to_labels(repo.get_label('invalid'))
         issue.edit(state='closed')
         return
 
     # Reopen if closed
+    with suppress(GithubException):
+        issue.remove_from_labels(repo.get_label('invalid'))
     issue.edit(state='open')
 
     # Label issue

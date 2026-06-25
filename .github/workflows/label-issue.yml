@@ -2,9 +2,7 @@ name: Label issue
 
 on:
   issues:
-    types: [opened, reopened]
-  issue_comment:
-    types: [created]
+    types: [edited, opened, reopened]
 
 permissions:
   contents: read
@@ -13,34 +11,17 @@ permissions:
 jobs:
   label:
     runs-on: ubuntu-24.04
+    if: |
+      (github.event.action == 'edited' && contains(github.event.issue.labels.*.name, 'invalid')) ||
+      github.event.action == 'opened' ||
+      github.event.action == 'reopened'
 
     steps:
-    - name: Detect /reopen comment
-      id: reopen-check
-      if: github.event_name == 'issue_comment'
-      uses: actions/github-script@v9
-      with:
-        script: |
-          const issue = context.payload.issue;
-          const comment = context.payload.comment;
-          const isReopen =
-            issue.state === "closed" &&
-            comment.user.login === issue.user.login &&
-            comment.body.trim() === "/reopen";
-
-          core.setOutput("reopen", isReopen ? "true" : "false");
-
     - name: Checkout repo
-      if: |
-        github.event_name == 'issues' ||
-        steps.reopen-check.outputs.reopen == 'true'
       uses: actions/checkout@v6
 
     - name: Parse issue body
       id: issue-parser
-      if: |
-        github.event_name == 'issues' ||
-        steps.reopen-check.outputs.reopen == 'true'
       uses: edumserrano/github-issue-forms-parser@f4e7864950f591c91ddd5215592484a4c789cebd
       continue-on-error: true
       with:
@@ -48,15 +29,9 @@ jobs:
         issue-form-body: '${{ github.event.issue.body }}'
 
     - name: Install dependencies
-      if: |
-        github.event_name == 'issues' ||
-        steps.reopen-check.outputs.reopen == 'true'
       run: pip install -r requirements.txt
 
     - name: Label issue
-      if: |
-        github.event_name == 'issues' ||
-        steps.reopen-check.outputs.reopen == 'true'
       run: ./label.py
       env:
         DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
