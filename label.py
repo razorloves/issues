@@ -4,17 +4,18 @@ import os
 import re
 from contextlib import suppress
 from dataclasses import dataclass
-from json import JSONDecodeError
 
 import requests
 import yaml
 from github import Auth, Github, GithubException
 from parse import parse
 
+from issue_parser.parser import ParsedBody, parse_issue
+
 
 @dataclass
 class IssueBody:
-    def __init__(self, issue_body: json):
+    def __init__(self, issue_body: ParsedBody):
         self.device: str = issue_body['device']
         self.version: str = issue_body['version']
         self.date: str = issue_body['date']
@@ -142,8 +143,14 @@ def main() -> None:
 
     # Parse issue body
     try:
-        issue_body = IssueBody(json.loads(os.environ.get('ISSUE_BODY')))
-    except JSONDecodeError:
+        with open(os.environ.get('GITHUB_EVENT_PATH')) as f:
+            issue_body = json.load(f)['issue']['body']
+
+        with open('.github/ISSUE_TEMPLATE/bugreport.yml') as f:
+            issue_template = f.read()
+
+        issue_body = IssueBody(parse_issue(issue_body, issue_template))
+    except Exception:
         issue.create_comment(
             '\n'.join(
                 [

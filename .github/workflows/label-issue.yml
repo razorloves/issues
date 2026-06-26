@@ -20,14 +20,6 @@ jobs:
     - name: Checkout repo
       uses: actions/checkout@v6
 
-    - name: Parse issue body
-      id: issue-parser
-      uses: edumserrano/github-issue-forms-parser@f4e7864950f591c91ddd5215592484a4c789cebd
-      continue-on-error: true
-      with:
-        template-filepath: '.github/ISSUE_TEMPLATE/bugreport.yml'
-        issue-form-body: '${{ github.event.issue.body }}'
-
     - name: Install dependencies
       run: pip install -r requirements.txt
 
@@ -35,6 +27,7 @@ jobs:
       run: ./label.py
       env:
         DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        GITHUB_EVENT_PATH: ${{ github.event_path }}
         GITHUB_REPOSITORY: ${{ github.repository }}
         GITHUB_REPOSITORY_NAME: ${{ github.event.repository.name }}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
