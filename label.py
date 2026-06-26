@@ -183,13 +183,13 @@ def main() -> None:
         )
         with suppress(GithubException):
             repo.create_label('invalid', 'b60205')  # just in case
-        issue.add_to_labels(repo.get_label('invalid'))
+        issue.add_to_labels('invalid')
         issue.edit(state='closed')
         return
 
     # Reopen if closed
     with suppress(GithubException):
-        issue.remove_from_labels(repo.get_label('invalid'))
+        issue.remove_from_labels('invalid')
     issue.edit(state='open')
 
     # Label issue
@@ -199,7 +199,7 @@ def main() -> None:
     ]:
         with suppress(GithubException):
             repo.create_label(label, color)  # just in case
-        issue.add_to_labels(repo.get_label(label))
+        issue.add_to_labels(label)
 
     # Assign maintainers if possible
     for maintainer in device_maintainers(issue_body.device):
