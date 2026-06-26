@@ -183,23 +183,21 @@ def main() -> None:
         )
         with suppress(GithubException):
             repo.create_label('invalid', 'b60205')  # just in case
-        issue.add_to_labels('invalid')
-        issue.edit(state='closed')
+        issue.edit(state='closed', labels=['invalid'])
         return
 
-    # Reopen if closed
-    with suppress(GithubException):
-        issue.remove_from_labels('invalid')
-    issue.edit(state='open')
+    # Reopen if closed and label issue
+    labels = [x.name for x in issue.labels if x.name != 'invalid']
 
-    # Label issue
     for label, color in [
         [f'device:{issue_body.device}', '0075ca'],
         [issue_body.version, '008672'],
     ]:
         with suppress(GithubException):
             repo.create_label(label, color)  # just in case
-        issue.add_to_labels(label)
+        labels.append(label)
+
+    issue.edit(state='open', labels=labels)
 
     # Assign maintainers if possible
     for maintainer in device_maintainers(issue_body.device):
