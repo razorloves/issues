@@ -185,6 +185,44 @@ def main() -> None:
             )
         )
         issue.edit(state='closed')
+
+        if url := os.environ.get('DISCORD_WEBHOOK'):
+            repository_name = os.environ.get('GITHUB_REPOSITORY_NAME')
+            workflow_run_url = os.environ.get('GITHUB_WORKFLOW_RUN_URL')
+
+            requests.post(
+                url,
+                json={
+                    'username': 'GitHub',
+                    'avatar_url': 'https://cdn.discordapp.com/avatars/1483379599995047987/e57fd67dc7ca0cc840a0e87a82281bc5',
+                    'embeds': [
+                        {
+                            'title': f'[{repository_name}] Failed to parse issue body',
+                            'url': workflow_run_url,
+                            'color': 15426592,
+                        }
+                    ],
+                },
+            )
+
+            requests.post(
+                url,
+                data={
+                    'payload_json': json.dumps(
+                        {
+                            'username': 'GitHub',
+                            'avatar_url': 'https://cdn.discordapp.com/avatars/1483379599995047987/e57fd67dc7ca0cc840a0e87a82281bc5',
+                        }
+                    ),
+                },
+                files={
+                    'file': (
+                        'event.json',
+                        open(os.environ.get('GITHUB_EVENT_PATH'), 'rb'),
+                    )
+                },
+            )
+
         return
 
     # Close issue if there are any errors
