@@ -130,9 +130,9 @@ def issue_errors(issue: IssueBody) -> list:
         text += '  <summary>Devices</summary>\n\n'
         text += '  | Vendor | Model | Codename |\n'
         text += '  |--------|-------|----------|\n'
-        for vendor, device, codename in names:
+        for vendor, model, codename in names:
             if codename in devices:
-                text += f'  | {vendor} | {device} | {codename} |\n'
+                text += f'  | {vendor} | {model} | {codename} |\n'
         text += '  </details>'
 
         ret.append(text)
