@@ -32,5 +32,4 @@ jobs:
         GITHUB_REPOSITORY_NAME: ${{ github.event.repository.name }}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         GITHUB_WORKFLOW_RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-        ISSUE_BODY: ${{ steps.issue-parser.outputs.parsed-issue }}
         ISSUE_NUMBER: ${{ github.event.issue.number }}
