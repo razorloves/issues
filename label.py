@@ -133,7 +133,7 @@ def issue_errors(issue: IssueBody) -> list:
         for vendor, device, codename in names:
             if codename in devices:
                 text += f'  | {vendor} | {device} | {codename} |\n'
-        text += '\n  </details>'
+        text += '  </details>'
 
         ret.append(text)
 
